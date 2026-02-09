@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: docker.io
-  IMAGE_NAME: acdonaire/apertus-8b
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-and-push:
@@ -27,13 +27,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Docker Hub
+      - name: Log in to GitHub Container Registry
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels)
         id: meta
@@ -63,17 +63,18 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
 
-# NOTA: Para usar este workflow necesitas configurar estos secrets en GitHub:
-# - DOCKER_USERNAME: tu usuario de Docker Hub
-# - DOCKER_PASSWORD: tu token de acceso de Docker Hub
+# NOTA: Este workflow usa GitHub Container Registry (ghcr.io)
+# No necesitas configurar secrets adicionales - usa el GITHUB_TOKEN automático
 #
-# Cómo configurar:
-# 1. Ve a Settings > Secrets and variables > Actions
-# 2. Añade DOCKER_USERNAME y DOCKER_PASSWORD
-# 3. Para crear versiones, usa git tags:
+# Para crear versiones, usa git tags:
 #    git tag v1.0
 #    git push origin v1.0
-# 4. Esto construirá y publicará automáticamente la versión v1.0
+# 
+# Esto construirá y publicará automáticamente en:
+#    ghcr.io/acdonaire/apertus:v1.0
+#
+# Para usar esta imagen en Verda:
+#    Imagen: ghcr.io/acdonaire/apertus:v1.0
 #
 # IMPORTANTE: Este workflow NO genera etiqueta "latest" porque Verda no la acepta.
 # Siempre usa etiquetas versionadas (v1.0, v1.1, v2.0, etc.)

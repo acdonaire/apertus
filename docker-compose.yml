@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  apertus-8b:
+    build: .
+    image: apertus-8b:latest
+    container_name: apertus-8b-server
+    ports:
+      - "8080:8080"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - CTX_SIZE=8192
+      - N_GPU_LAYERS=99
+      - TEMPERATURE=0.7
+      - TOP_P=0.9
+      - TOP_K=40
+      - REPEAT_PENALTY=1.1
+      - N_PREDICT=512
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+# Uso:
+# docker-compose up -d          # Iniciar en background
+# docker-compose logs -f        # Ver logs
+# docker-compose down           # Detener y eliminar

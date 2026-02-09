@@ -27,15 +27,16 @@ Despliegue optimizado del modelo **Apertus 8B Instruct** (modelo de IA suizo ope
 git clone https://github.com/acdonaire/apertus.git
 cd apertus
 
-# Construir la imagen (tarda ~10-15 minutos)
-docker build -t apertus-8b:latest .
+# Construir la imagen con versión específica (tarda ~10-15 minutos)
+# IMPORTANTE: NO usar "latest" - Verda requiere etiquetas versionadas
+docker build -t apertus-8b:v1.0 .
 ```
 
 ### Paso 2: Probar localmente (opcional)
 
 ```bash
 # Ejecutar con GPU
-docker run --gpus all -p 8080:8080 apertus-8b:latest
+docker run --gpus all -p 8080:8080 apertus-8b:v1.0
 
 # Probar el endpoint
 curl http://localhost:8080/v1/chat/completions \
@@ -52,19 +53,19 @@ curl http://localhost:8080/v1/chat/completions \
 ### Paso 3: Subir a Docker Registry
 
 ```bash
-# Etiquetar para Docker Hub
-docker tag apertus-8b:latest acdonaire/apertus-8b:latest
+# Etiquetar para Docker Hub con versión (NO usar "latest")
+docker tag apertus-8b:v1.0 acdonaire/apertus-8b:v1.0
 
 # Push
 docker login
-docker push acdonaire/apertus-8b:latest
+docker push acdonaire/apertus-8b:v1.0
 ```
 
 ### Paso 4: Desplegar en Verda Cloud
 
 1. Accede a tu panel de Verda Cloud
 2. Crear nuevo contenedor serverless:
-   - **Imagen**: `acdonaire/apertus-8b:latest`
+   - **Imagen**: `acdonaire/apertus-8b:v1.0` (usar versión específica)
    - **GPU**: H100 (80GB)
    - **Puerto**: 8080
    - **Timeout**: 300s (para cold start inicial)

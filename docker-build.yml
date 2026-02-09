@@ -45,7 +45,9 @@ jobs:
             type=ref,event=pr
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=sha-
+          # NOTA: NO generamos etiqueta "latest" porque Verda no la acepta
+          # Usa siempre etiquetas versionadas (v1.0, v1.1, etc.)
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -68,4 +70,10 @@ jobs:
 # Cómo configurar:
 # 1. Ve a Settings > Secrets and variables > Actions
 # 2. Añade DOCKER_USERNAME y DOCKER_PASSWORD
-# 3. Cada push a main construirá y publicará automáticamente la imagen
+# 3. Para crear versiones, usa git tags:
+#    git tag v1.0
+#    git push origin v1.0
+# 4. Esto construirá y publicará automáticamente la versión v1.0
+#
+# IMPORTANTE: Este workflow NO genera etiqueta "latest" porque Verda no la acepta.
+# Siempre usa etiquetas versionadas (v1.0, v1.1, v2.0, etc.)

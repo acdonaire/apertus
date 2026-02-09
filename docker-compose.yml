@@ -3,7 +3,7 @@ version: '3.8'
 services:
   apertus-8b:
     build: .
-    image: apertus-8b:latest
+    image: apertus-8b:v1.0
     container_name: apertus-8b-server
     ports:
       - "8080:8080"

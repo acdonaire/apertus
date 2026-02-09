@@ -1,5 +1,5 @@
 # Dockerfile para Apertus 8B Serverless
-# Optimizado para GPUs H100 en Verda Cloud
+# Compatible con GPUs A100 y H100 en Verda Cloud
 
 FROM nvidia/cuda:12.1.0-devel-ubuntu22.04
 
@@ -27,12 +27,12 @@ RUN apt-get update && apt-get install -y \
 # Crear directorio de trabajo
 WORKDIR /app
 
-# Compilar llama.cpp con soporte CUDA optimizado para H100 (compute capability 9.0)
+# Compilar llama.cpp con soporte CUDA universal (A100 y H100)
 RUN git clone https://github.com/ggerganov/llama.cpp && \
     cd llama.cpp && \
     cmake -B build \
         -DGGML_CUDA=ON \
-        -DCMAKE_CUDA_ARCHITECTURES=90 \
+        -DCMAKE_CUDA_ARCHITECTURES="80;90" \
         -DLLAMA_CURL=ON \
         -DCMAKE_BUILD_TYPE=Release && \
     cmake --build build --config Release -j$(nproc) && \
